@@ -19,11 +19,11 @@ async def news():
             subs = await db.subs(company)
             for i in subs:
                 i = str(i)
-                hash_first = i.find('last_news=') + 10
-                hash_last = i.find('>', hash_first)
+                hash_first = i.find('last_news=') + 11
+                hash_last = i.find('\'', hash_first)
                 last_news = str(i[hash_first:hash_last])
 
-                if last_news == "None" or last_news != new_hash:
+                if last_news != new_hash:
                     print(f"{company} : {last_news} : {new_hash}")
 
                     id_first = i.find('user_id=') + 8
@@ -35,5 +35,4 @@ async def news():
                     f"\n"
                     f"{The_Article.text}\n"
                     f"{The_Article.link}", reply_markup=await create_but2(company))
-                    new_hash = int(new_hash)
                     await db.set_hash(new_hash, cur_id, company)

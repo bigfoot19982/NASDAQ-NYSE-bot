@@ -11,7 +11,7 @@ create_tab_users = """
         user_id int NOT NULL,
         company_name varchar(30) REFERENCES companies(company_name),
         user_name varchar(200) NOT NULL,
-        last_news bigint
+        last_news text
         )
         """
 

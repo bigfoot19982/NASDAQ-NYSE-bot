@@ -18,11 +18,12 @@ async def create_but(message: types.Message):
     return news_on_the_stock
 
 async def create_but2(company: str):
+    company = company.upper()
     unsubs = InlineKeyboardMarkup(row_width=1,
                                   inline_keyboard=[
                                       [
                                           InlineKeyboardButton(
-                                              text="Отписаться от новостей",
+                                              text=f"Отписаться от новостей по {company}",
                                               callback_data=unsubs_callback.new(no="no", comp=company)
                                           )
                                       ]

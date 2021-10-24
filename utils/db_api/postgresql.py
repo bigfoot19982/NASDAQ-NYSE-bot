@@ -45,7 +45,7 @@ class Database:
         if num == 0:
             await self.pool.execute(delete, company)
 
-    async def set_hash(self, new_hash: int, id: int, company):
+    async def set_hash(self, new_hash: str, id: int, company):
         await self.pool.execute(set_hash, new_hash, id, company)
 
     async def subs(self, company: str):

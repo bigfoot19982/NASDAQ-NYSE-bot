@@ -12,9 +12,6 @@ class new_article:
         self.title = title
         self.text = text
 
-    def __hash__(self):
-        return hash((self.pic, self.link, self.title, self.text))
-
 
 async def check_if_news(s: str):
     name_first = s.find('\'') + 1
@@ -34,6 +31,6 @@ async def check_if_news(s: str):
 
     The_article = new_article(pic, link, title, text)
 
-    new_hash = The_article.__hash__()
+    new_hash = The_article.link
 
     return The_article, new_hash, company
