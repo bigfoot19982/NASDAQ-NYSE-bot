@@ -16,7 +16,11 @@ async def get_price(html):
     return price
 
 
-async def get_data(html):
+async def find_value(basic: str, add_to_colon=2, colon=":"):
+    return basic.find(colon) + add_to_colon
+
+
+async def get_indicators(html):
     soup = BeautifulSoup(html, 'lxml')
     trs = list(soup.find('div', class_="order-1 flex flex-row gap-4").find_all('tr'))
 
@@ -27,15 +31,9 @@ async def get_data(html):
     div = trs[7].get_text(separator=" : ").strip()
     target = trs[-2].get_text(separator=" : ").strip()
 
-    c_cap = cap.find(":")
-    c_rev = revenue.find(":")
-    c_inc = income.find(":")
-    c_pe = PE.find(":")
-    c_div = div.find(":")
-    c_targ = target.find(":")
-
-    indicators = [cap[c_cap + 2:], revenue[c_rev + 2:], income[c_inc + 2:], PE[c_pe + 2:], div[c_div + 2:],
-                  target[c_targ + 2:]]
+    indicators = [cap[await find_value(cap):], revenue[await find_value(revenue):], income[await find_value(income):],
+                  PE[await find_value(PE):], div[await find_value(div):],
+                  target[await find_value(target):]]
     return indicators
 
 
@@ -43,20 +41,6 @@ async def get_name(html):
     soup = BeautifulSoup(html, 'lxml')
     name = soup.find('h1', class_="text-2xl sm:text-[26px] font-bold text-gray-900").text.strip()
     return name
-
-
-async def get_ownership(query):
-    url_1 = "https://finance.yahoo.com/quote/"
-    url_2 = "/holders?p="
-    common_url = url_1 + query + url_2 + query
-    print(common_url)
-    site = requests.get(common_url).text
-    print(site)
-    soup = BeautifulSoup(site, 'lxml')
-    print(soup)
-    ownership = soup.find('div', class_="W(100%) Mb(20px)").find('tr', classs_="BdT Bdc($seperatorColor)").text.strip()
-    print(ownership)
-    return ownership
 
 
 async def get_html_prof(template):
@@ -78,25 +62,18 @@ async def get_description(template):
     return description
 
 
-async def func(query):
+async def getting_info_on_the_ticker(query):
     template = "https://stockanalysis.com/stocks/" + query + "/"
     header = {
         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Safari/537.36'}
     html = await get_html(template, header)
-    all_data = []
-    name = await get_name(html)
-    price = await get_price(html)
-    indicators = await get_data(html)
-    all_data.append(price)
-    all_data.append(indicators)
-    all_data.append(name)
-    # ownership = await get_ownership(query)
+
+    all_data = [await get_name(html), await get_price(html), await get_indicators(html), await get_description(template)]
+
     try:
         picture = await get_picture(template)
         all_data.append(picture)
     except:
         pass
-    description = await get_description(template)
-    all_data.append(description)
 
     return all_data

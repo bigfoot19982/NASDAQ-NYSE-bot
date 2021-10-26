@@ -3,6 +3,7 @@ import asyncpg
 from aiogram import types
 
 from data import config
+from keyboards.inline.news import create_button_unsubscribe
 from utils.db_api.big_scripts import create_tab_companies, create_tab_users, add_comp, add_user, unsubscribe, \
     check_if_exists, count_comps, delete, all_comps, comp_subscribers, set_hash
 
@@ -33,7 +34,8 @@ class Database:
     async def add_user(self, id: int, company_name: str, user_name: str, call: types.CallbackQuery):
         num = await self.pool.fetchval(check_if_exists, id, company_name)
         if num > 0:
-            await call.message.answer("Вы уже подписаны на новости о данной компании!")
+            await call.message.answer("Вы уже подписаны на новости о данной компании!",
+                                      reply_markup=await create_button_unsubscribe(company_name))
             return False
         else:
             await self.pool.execute(add_user, id, company_name, user_name)
@@ -48,7 +50,7 @@ class Database:
     async def set_hash(self, new_hash: str, id: int, company):
         await self.pool.execute(set_hash, new_hash, id, company)
 
-    async def subs(self, company: str):
+    async def subscribers_of_the_company(self, company: str):
         return await self.pool.fetch(comp_subscribers, company)
 
     async def all_comps(self):

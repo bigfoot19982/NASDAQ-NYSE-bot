@@ -1,10 +1,9 @@
-from dataclasses import dataclass
-
 import requests
 from bs4 import BeautifulSoup
 
+from handlers.users.supplementary.get_indexes import indexes
 
-@dataclass
+
 class new_article:
     def __init__(self, pic, link, title, text):
         self.pic = pic
@@ -13,11 +12,9 @@ class new_article:
         self.text = text
 
 
-async def check_if_news(s: str):
-    name_first = s.find('\'') + 1
-    name_last = s.find('\'', name_first)
-
-    company = s[name_first:name_last].lower()
+async def check_on_company_site(s: str):
+    positions_in_company_name = await indexes('\'', '\'', s, 1)
+    company = s[positions_in_company_name[0]:positions_in_company_name[1]].lower()
 
     refer = 'https://stockanalysis.com/stocks/' + company + '/'
 

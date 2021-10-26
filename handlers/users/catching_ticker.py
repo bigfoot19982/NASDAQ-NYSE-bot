@@ -1,44 +1,29 @@
 from aiogram import types
 
-from keyboards.inline.news import create_but, create_but2
-from keyboards.inline.subs import affirm_callback, unsubs_callback
+from handlers.users.supplementary.get_company_data_text import form_text
+from keyboards.inline.news import create_button_subscribe, create_button_unsubscribe
+from keyboards.inline.subs import subscribe_callback, unsubscribe_callback
 from loader import dp, db
-from utils.parsing.receiving_tickers import func
+from utils.parsing.receiving_tickers import getting_info_on_the_ticker
+
+
+async def answer_to_ticker(data: list, message: types.Message):
+    try:
+        await dp.bot.send_photo(message.from_user.id, photo=data[4], caption=await form_text(data),
+                                reply_markup=await create_button_subscribe(message))
+    except:
+        await dp.bot.send_message(message.from_user.id, text=await form_text(data),
+                                  reply_markup=await create_button_subscribe(message))
 
 
 @dp.message_handler()
 async def get_ticker(message: types.Message):
-    data = await func(message.text)
-    if (len(data) == 5):
-        await dp.bot.send_photo(message.from_user.id, photo=data[3], caption=
-        f"{data[2]}\n"
-        f"\n"
-        f"{data[-1]}\n"
-        f"\n"
-        f"Цена акции {data[0]}$.\n"
-        f"Капитализация {data[1][0]}$.\n"
-        f"Общая выручка {data[1][1]}$\n"
-        f"Чистый доход {data[1][2]}$\n"
-        f"P/E равен {data[1][3]} (в норме он меньше 15)\n"
-        f"Дивиденды составляют {data[1][4]}\n"
-        f"Потенциал роста до {data[1][5]}.\n", reply_markup=await create_but(message))
-    else:
-        await dp.bot.send_message(message.from_user.id, f"{data[2]}\n"
-                                                        f"\n"
-                                                        f"{data[-1]}\n"
-                                                        f"\n"
-                                                        f"Цена акции {data[0]}$.\n"
-                                                        f"Капитализация {data[1][0]}$.\n"
-                                                        f"Общая выручка {data[1][1]}$\n"
-                                                        f"Чистый доход {data[1][2]}$\n"
-                                                        f"P/E равен {data[1][3]} (в норме он меньше 15)\n"
-                                                        f"Дивиденды составляют {data[1][4]}\n"
-                                                        f"Потенциал роста до {data[1][5]}.\n",
-                                  reply_markup=await create_but(message))
+    data = await getting_info_on_the_ticker(message.text)
+    await answer_to_ticker(data, message)
 
 
-@dp.callback_query_handler(affirm_callback.filter(yes="yes"))
-async def affirmation(call: types.CallbackQuery, callback_data: dict):
+@dp.callback_query_handler(subscribe_callback.filter(yes="yes"))
+async def subscription(call: types.CallbackQuery, callback_data: dict):
     await call.answer()
     company = (callback_data.get("comp")).upper()
     await db.add_company(company)
@@ -47,10 +32,10 @@ async def affirmation(call: types.CallbackQuery, callback_data: dict):
     if b != False:
         await call.message.answer(f"Вы подписались на новости про {company}!\n"
                                   f"Чтобы отписаться, нажмите соответствующую кнопку",
-                                  reply_markup=await create_but2(company))
+                                  reply_markup=await create_button_unsubscribe(company))
 
 
-@dp.callback_query_handler(unsubs_callback.filter(no="no"))
+@dp.callback_query_handler(unsubscribe_callback.filter(no="no"))
 async def unsubscription(call: types.CallbackQuery, callback_data: dict):
     await call.answer()
     company = callback_data.get("comp")
