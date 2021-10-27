@@ -1,3 +1,4 @@
+# the func helps to get a special part of a string
 async def indexes(first: str, second: str, basic: str, add_to_first: int):
     ind_1 = basic.find(first) + add_to_first
     ind_2 = basic.find(second, ind_1)

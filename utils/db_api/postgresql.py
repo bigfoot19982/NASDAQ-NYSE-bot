@@ -32,11 +32,13 @@ class Database:
             print("The company is in the list already")
 
     async def add_user(self, id: int, company_name: str, user_name: str, call: types.CallbackQuery):
+        # check if the user already has a subscription to the company
         num = await self.pool.fetchval(check_if_exists, id, company_name)
         if num > 0:
             await call.message.answer("Вы уже подписаны на новости о данной компании!",
                                       reply_markup=await create_button_unsubscribe(company_name))
             return False
+        # if he doesnt we provide him with a subscription
         else:
             await self.pool.execute(add_user, id, company_name, user_name)
             return True
