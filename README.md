@@ -1,6 +1,6 @@
 # NASDAQ-NYSE-bot
 
-Subscribe to the latest news of any american stocks
+Subscribe to the latest news of American stocks
 
 ![](https://img.shields.io/pypi/implementation/aiogram?style=plastic)
 ![Version](https://img.shields.io/pypi/v/aiogram?style=plastic)
