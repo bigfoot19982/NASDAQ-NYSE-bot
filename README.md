@@ -6,7 +6,7 @@ Subscribe to the latest news of American stocks
 ![Version](https://img.shields.io/pypi/v/aiogram?style=plastic)
 ![License](https://img.shields.io/pypi/l/aiogram?style=plastic)
 ![License](https://img.shields.io/pypi/l/asyncpg?style=plastic)
-![last_commit](https://img.shields.io/github/last-commit/bigfoot19982/Selling_Books_Bot?style=plastic)
+![last_commit](https://img.shields.io/github/last-commit/bigfoot19982/NASDAQ-NYSE-bot?style=plastic)
 
 ## Why one might need this telegram bot?
 No matter if you're a long term investor or a daily trader,
